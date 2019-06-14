@@ -8,11 +8,11 @@ else
     echo "argument error"
 fi
 
-PROJECT="yesbankdatathon"
+PROJECT="YOUR PROJECT NAME"
 MACHINE="n1-standard-1"
 REGION="europe-west1"
 ZONE="europe-west1-c"
-ACCOUNT="143321348218-compute@developer.gserviceaccount.com"
+ACCOUNT="YOUR ACCOUNT NAME"
 IMAGE="ubuntu-1804-bionic-v20190612"
 DISKTYPE="pd-ssd"
 DISKSIZE="200GB"
