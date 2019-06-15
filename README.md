@@ -15,7 +15,7 @@ that you get while creating a new instance. It is shown in the picture.
 * First Time Use only(end)
 7. Now you can run the script using `./Create_VM.sh <Name of Instance>`
 
-![Main Window](tut.png)
+![Main Window](media/tut.png)
 
 __IMPORTANT__
 1. The OS ubuntu-1804-bionic-v20180522 has been changed to  ubuntu-1804-bionic-v20190612 since the former is not available.
