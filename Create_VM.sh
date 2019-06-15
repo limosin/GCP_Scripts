@@ -8,11 +8,11 @@ else
     echo "argument error"
 fi
 
-PROJECT="YOUR PROJECT NAME"
+PROJECT="<PROJECT NAME>"
 MACHINE="n1-standard-1"
 REGION="europe-west1"
 ZONE="europe-west1-c"
-ACCOUNT="YOUR ACCOUNT NAME"
+ACCOUNT="<ACCOUNT NAME>"
 IMAGE="ubuntu-1804-bionic-v20190612"
 DISKTYPE="pd-ssd"
 DISKSIZE="200GB"
@@ -27,11 +27,22 @@ gcloud compute --project=$PROJECT instances create $name --zone=$ZONE --machine-
 
 
 echo "Making the external IP static"
-
 EXTIPADD=$(gcloud compute instances describe $name --format='get(networkInterfaces[0].accessConfigs[0].natIP)' --zone=$ZONE)
-
 gcloud compute addresses create $name --addresses $EXTIPADD --region=$REGION
-
-echo "Your External IP address is :"
-
+echo "Your External IP Address is :"
 echo $EXTIPADD
+
+# Changes have been done from here, please copy past the below part.
+white=$2
+
+#SQL=$name
+SQL="<Your SQL name>"
+
+if [[ -n "$white" ]]; then
+    echo "Whitelisting the Address: $EXTIPADD"
+    OLDPOOL=$(gcloud sql instances describe $SQL --format='get(settings.ipConfiguration.authorizedNetworks.value)')
+    TEMPOOL="$OLDPOOL;$EXTIPADD"
+    NEWPOOL=${TEMPOOL//;/,}
+    gcloud sql instances patch $SQL --authorized-networks=$NEWPOOL --quiet
+    echo "Successfully Whitelisted!!"
+fi
