@@ -32,4 +32,6 @@ EXTIPADD=$(gcloud compute instances describe $name --format='get(networkInterfac
 
 gcloud compute addresses create $name --addresses $EXTIPADD --region=$REGION
 
+echo "Your External IP address is :"
+
 echo $EXTIPADD
