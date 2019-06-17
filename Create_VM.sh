@@ -37,7 +37,7 @@ gcloud compute addresses create $name --addresses $EXTIPADD --region=$REGION
 if [[ -n "$white" ]]; then
     echo "Whitelisting the IP for SQL Server - $SQL"
     ACCESS_TOKEN="$(gcloud auth application-default print-access-token)"
-    OLDPOOL="$(gcloud sql instances describe sqld2 --format='get(settings.ipConfiguration.authorizedNetworks)')"
+    OLDPOOL="$(gcloud sql instances describe $SQL --format='get(settings.ipConfiguration.authorizedNetworks)')"
     OLDPOOL=${OLDPOOL//;/,}
     OLDPOOL=${OLDPOOL//u\'/\"}
     OLDPOOL=${OLDPOOL//\'/\"}
