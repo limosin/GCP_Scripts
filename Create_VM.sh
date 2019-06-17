@@ -43,7 +43,7 @@ if [[ -n "$white" ]]; then
     OLDPOOL=${OLDPOOL//\'/\"}
     header='{"settings":{"ipConfiguration":{"authorizedNetworks":'
     stri="$header[{\"name\":\"$name\",\"value\":\"$EXTIPADD\",\"kind\":\"sql#aclEntry\"},$OLDPOOL]}}}"
-    curl --header "Authorization: Bearer ${ACCESS_TOKEN}" --header 'Content-Type: application/json' --data "$stri" -X PATCH https://www.googleapis.com/sql/v1beta4/projects/yesbankdatathon/instances/sqld2
+    curl --header "Authorization: Bearer ${ACCESS_TOKEN}" --header 'Content-Type: application/json' --data "$stri" -X PATCH https://www.googleapis.com/sql/v1beta4/projects/$PROJECT/instances/$SQL
 fi
 
 echo "Your External IP Address is :"
