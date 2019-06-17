@@ -2,6 +2,8 @@
 
 name=$1
 
+white=$2
+
 if [[ -n "$name" ]]; then
     echo "Creating VM"
 else
@@ -16,6 +18,7 @@ ACCOUNT="<ACCOUNT NAME>"
 IMAGE="ubuntu-1804-bionic-v20190612"
 DISKTYPE="pd-ssd"
 DISKSIZE="200GB"
+SQL="<SQL INSTANCE NAME>"
 
 APIS="https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/trace.append,https://www.googleapis.com/auth/devstorage.full_control"
 
@@ -27,22 +30,21 @@ gcloud compute --project=$PROJECT instances create $name --zone=$ZONE --machine-
 
 
 echo "Making the external IP static"
+
 EXTIPADD=$(gcloud compute instances describe $name --format='get(networkInterfaces[0].accessConfigs[0].natIP)' --zone=$ZONE)
 gcloud compute addresses create $name --addresses $EXTIPADD --region=$REGION
-echo "Your External IP Address is :"
-echo $EXTIPADD
-
-# Changes have been done from here, please copy past the below part.
-white=$2
-
-#SQL=$name
-SQL="<Your SQL name>"
 
 if [[ -n "$white" ]]; then
-    echo "Whitelisting the Address: $EXTIPADD"
-    OLDPOOL=$(gcloud sql instances describe $SQL --format='get(settings.ipConfiguration.authorizedNetworks.value)')
-    TEMPOOL="$OLDPOOL;$EXTIPADD"
-    NEWPOOL=${TEMPOOL//;/,}
-    gcloud sql instances patch $SQL --authorized-networks=$NEWPOOL --quiet
-    echo "Successfully Whitelisted!!"
+    echo "Whitelisting the IP for SQL Server - $SQL"
+    ACCESS_TOKEN="$(gcloud auth application-default print-access-token)"
+    OLDPOOL="$(gcloud sql instances describe sqld2 --format='get(settings.ipConfiguration.authorizedNetworks)')"
+    OLDPOOL=${OLDPOOL//;/,}
+    OLDPOOL=${OLDPOOL//u\'/\"}
+    OLDPOOL=${OLDPOOL//\'/\"}
+    header='{"settings":{"ipConfiguration":{"authorizedNetworks":'
+    stri="$header[{\"name\":\"$name\",\"value\":\"$EXTIPADD\",\"kind\":\"sql#aclEntry\"},$OLDPOOL]}}}"
+    curl --header "Authorization: Bearer ${ACCESS_TOKEN}" --header 'Content-Type: application/json' --data "$stri" -X PATCH https://www.googleapis.com/sql/v1beta4/projects/yesbankdatathon/instances/sqld2
 fi
+
+echo "Your External IP Address is :"
+echo $EXTIPADD
